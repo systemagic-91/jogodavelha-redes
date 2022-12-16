@@ -2,7 +2,6 @@ public class Jogada {
 
     private Jogador jogador;
     private String tipoDeJogada;
-
     private Integer x;
     private Integer y;
 

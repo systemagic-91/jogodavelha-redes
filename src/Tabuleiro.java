@@ -12,9 +12,10 @@ public class Tabuleiro {
 
     public void adicionarJogadaNoTabuleiro(Jogada jogada){
         this.tabuleiro[jogada.getX()][jogada.getY()] = jogada.getJogada();
+        this.adicionarJogadaNaListaDeJogadas(jogada);
     }
 
-    public void adicionarJogadaNaListaDeJogadas(Jogada jogada){
+    private void adicionarJogadaNaListaDeJogadas(Jogada jogada){
         this.jogadas.add(jogada);
     }
 

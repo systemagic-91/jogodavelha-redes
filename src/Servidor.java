@@ -7,6 +7,40 @@ import java.net.Socket;
 public class Servidor {
 
     private static ServerSocket servidor;
+    private Partida partida;
+    private Jogador jogador1;
+    private Jogador jogador2;
+
+    public void criaPartida(){
+
+        this.jogador1 = new Jogador("jogador1", "X");
+        this.jogador2 = new Jogador("jogador2", "O");
+
+        this.partida = new Partida(jogador1, jogador2);
+    }
+
+    public void iniciarJogo(){
+
+        String vencedor = "";
+
+        while (vencedor.equals("")){
+
+            Jogada jogada = new Jogada(jogador1, "X", 1, 1);
+
+            if(vencedor.equals("")){
+                partida.getTabuleiro().adicionarJogadaNoTabuleiro(jogada);
+                vencedor = partida.getTabuleiro().verificaVencedor();
+                jogador1.setPontuacao(jogador1.getPontuacao() + 1);
+            }
+
+            if (vencedor.equals("")){
+                jogada = new Jogada(jogador2, "O", 2, 2);
+                partida.getTabuleiro().adicionarJogadaNoTabuleiro(jogada);
+                vencedor = partida.getTabuleiro().verificaVencedor();
+                jogador2.setPontuacao(jogador2.getPontuacao() + 1);
+            }
+        }
+    }
 
     public static void main(String[] args) {
 
@@ -17,7 +51,7 @@ public class Servidor {
             // esperando clientes
             while (true){
 
-                // quando vir uma solicitacao para porta 7001
+                // quando vir uma solicitacao de novo jogo para porta 7001
                 Socket cliente = servidor.accept();
 
                 // pega o que esta na entrada de fluxo de dados do cliente
@@ -30,8 +64,11 @@ public class Servidor {
                 cliente.close();
             }
 
+
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+
         }
     }
 }
