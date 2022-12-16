@@ -19,7 +19,7 @@ public class Tabuleiro {
         this.jogadas.add(jogada);
     }
 
-    public void limparBoard(){
+    public void limparTabuleiro(){
         for (int i = 0; i < tabuleiro.length; i++) {
             for (int j = 0; j < tabuleiro.length; j++) {
                 tabuleiro[i][j] = "";

@@ -11,52 +11,43 @@ import java.net.DatagramPacket;
 public class Servidor {
 
     private static ServerSocket servidor;
-    private Partida partida;
-    private Jogador jogador1;
-    private Jogador jogador2;
-    private String vencedor;
+    private static Partida partida;
+    private static Jogador jogador;
+    private static String vencedor;
+    private static int pontuacao_X;
+    private static int pontuacao_O;
 
 
-    public void criaPartida(){
-
-        this.jogador1 = new Jogador("jogador1", "X");
-        this.jogador2 = new Jogador("jogador2", "O");
-
-        this.partida = new Partida(jogador1, jogador2);
+    public static void criaPartida(){
+        partida = new Partida();
+        pontuacao_X = 0;
+        pontuacao_O = 0;
     }
 
-    public void iniciarJogo(){
+    public static String atualizarJogo(Jogada jogada){
 
         vencedor = "";
 
-        while (vencedor.equals("")){
+        jogador.setNickname(jogada.getJogador().getNickname());
 
-            Jogada jogada = new Jogada(jogador1, "X", 1, 1);
+        partida.getTabuleiro().adicionarJogadaNoTabuleiro(jogada);
 
-            if(vencedor.equals("")){
-                partida.getTabuleiro().adicionarJogadaNoTabuleiro(jogada);
-                vencedor = partida.getTabuleiro().verificaVencedor();
-                jogador1.setPontuacao(jogador1.getPontuacao() + 1);
-            }
+        vencedor = partida.getTabuleiro().verificaVencedor();
 
-            if (vencedor.equals("")){
-                jogada = new Jogada(jogador2, "O", 2, 2);
-                partida.getTabuleiro().adicionarJogadaNoTabuleiro(jogada);
-                vencedor = partida.getTabuleiro().verificaVencedor();
-                jogador2.setPontuacao(jogador2.getPontuacao() + 1);
-            }
-        }
+        return vencedor;
     }
 
-    public static String montarMensagem(String nickname, Integer x, Integer y){
+    public static String montarMensagem(String nickname, Integer x, Integer y, String tipoDeJogada){
         return nickname + "," + x + "," + y;
     }
 
-    public static String [] desmontarMensagem(String mensagem){
-
+    public static String[] desmontarMensagem(String mensagem){
         var msg = mensagem.split(",");
-
         return msg;
+    }
+
+    public static void atualizaPontuacaoDoJogador(){
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -65,6 +56,8 @@ public class Servidor {
 
         // Create a DatagramSocket to listen for UDP connections
         DatagramSocket udpSocket = new DatagramSocket(9988);
+
+        criaPartida();
 
         // Start a thread to handle TCP connections
         new Thread(new Runnable() {
@@ -82,16 +75,34 @@ public class Servidor {
                                     //Efetua a primitiva receive
                                     System.out.println("Aguardando datagrama do cliente...");
                                     BufferedReader entrada =  new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                                    System.out.println("Datagrama recebido...");
 
                                     //Operacao com os dados recebidos e preparacao dos a serem enviados
-                                    String str = entrada.readLine();
-                                    System.out.println("Received: " + str);
+                                    var msgRecebida = desmontarMensagem(entrada.readLine());
+                                    System.out.println("Received: " + msgRecebida.toString());
 
-                                    str = str.toUpperCase() + '\n';
+                                    var nickname = msgRecebida[0];
+                                    var x = msgRecebida[1];
+                                    var y = msgRecebida[2];
+                                    var tipoDeJogada = msgRecebida[4];
+
+                                    Jogador j = new Jogador(nickname, tipoDeJogada);
+                                    Jogada jogada = new Jogada(j, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y));
+
+                                    String vencedor = atualizarJogo(jogada);
+
+                                    if (vencedor.equals("O"))
+                                        pontuacao_O++;
+
+                                    if (vencedor.equals("X"))
+                                        pontuacao_X++;
+
+                                    String msgParaEnviar = montarMensagem(nickname, Integer.parseInt(x), Integer.parseInt(y), tipoDeJogada);
 
                                     //Efetua a primitiva send
                                     DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());
-                                    saida.writeBytes(str);
+                                    saida.writeBytes(msgParaEnviar);
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

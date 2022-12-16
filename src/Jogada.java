@@ -16,6 +16,8 @@ public class Jogada {
         this.y = y;
     }
 
+
+
     public Jogador getJogador() {
         return jogador;
     }
