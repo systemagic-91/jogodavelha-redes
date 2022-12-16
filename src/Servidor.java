@@ -48,6 +48,17 @@ public class Servidor {
         }
     }
 
+    public static String montarMensagem(String nickname, Integer x, Integer y){
+        return nickname + "," + x + "," + y;
+    }
+
+    public static String [] desmontarMensagem(String mensagem){
+
+        var msg = mensagem.split(",");
+
+        return msg;
+    }
+
     public static void main(String[] args) throws Exception {
         // Create a ServerSocket to listen for TCP connections
         ServerSocket tcpSocket = new ServerSocket(9999);
@@ -90,7 +101,7 @@ public class Servidor {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+                        }
         }).start();
 
         // Start a thread to handle UDP connections
