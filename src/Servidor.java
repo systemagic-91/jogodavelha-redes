@@ -1,8 +1,12 @@
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.DatagramPacket;
 
 public class Servidor {
 
@@ -44,33 +48,88 @@ public class Servidor {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        // Create a ServerSocket to listen for TCP connections
+        ServerSocket tcpSocket = new ServerSocket(9999);
 
-        try {
-            // servidor escutando na porta 7001
-            servidor = new ServerSocket(7001);
+        // Create a DatagramSocket to listen for UDP connections
+        DatagramSocket udpSocket = new DatagramSocket(9988);
 
-            // esperando clientes
-            while (true){
+        // Start a thread to handle TCP connections
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    // Accept incoming TCP connections in an infinite loop
+                    while (true) {
+                        // Accept a new connection (blocking call)
+                        Socket clientSocket = tcpSocket.accept();
 
-                // quando vir uma solicitacao de novo jogo para porta 7001
-                Socket cliente = servidor.accept();
+                        // Handle the connection in a separate thread
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    //Efetua a primitiva receive
+                                    System.out.println("Aguardando datagrama do cliente...");
+                                    BufferedReader entrada =  new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                // pega o que esta na entrada de fluxo de dados do cliente
-                InputStreamReader fluxoDadosCliente = new InputStreamReader(cliente.getInputStream());
-                BufferedReader dados = new BufferedReader(fluxoDadosCliente);
+                                    //Operacao com os dados recebidos e preparacao dos a serem enviados
+                                    String str = entrada.readLine();
+                                    System.out.println("Received: " + str);
 
-                System.out.println("cliente conectado: " + cliente.getInetAddress());
-                System.out.println(dados.readLine());
+                                    str = str.toUpperCase() + '\n';
 
-                cliente.close();
+                                    //Efetua a primitiva send
+                                    DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());
+                                    saida.writeBytes(str);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+        }).start();
 
+        // Start a thread to handle UDP connections
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    // Create a buffer to receive incoming packets
+                    byte[] buffer = new byte[1024];
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
+                    // Create a packet to receive the data
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-        }
+                    // Receiving packets in an infinite loop
+                    while (true) {
+                        // Receive a packet (blocking call)
+                        udpSocket.receive(packet);
+
+                        // Handle the packet in a separate thread
+                        new Thread(new Runnable() {
+                            public void run() {
+                                byte[] sendData = new byte[1024];
+                                try {
+                                    System.out.println("RECEIVED: " + new String(packet.getData()));
+                                    InetAddress ipCliente = packet.getAddress();
+                                    int portaCliente = packet.getPort();
+                                    sendData = (new String(packet.getData())).toUpperCase().getBytes();
+                           
+                                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipCliente, portaCliente);
+                                    udpSocket.send(sendPacket);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
