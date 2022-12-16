@@ -10,6 +10,8 @@ public class Servidor {
     private Partida partida;
     private Jogador jogador1;
     private Jogador jogador2;
+    private String vencedor;
+
 
     public void criaPartida(){
 
@@ -21,7 +23,7 @@ public class Servidor {
 
     public void iniciarJogo(){
 
-        String vencedor = "";
+        vencedor = "";
 
         while (vencedor.equals("")){
 
