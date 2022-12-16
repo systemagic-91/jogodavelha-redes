@@ -8,6 +8,19 @@ public class Tabuleiro {
 
     public Tabuleiro() {
         this.jogadas = new ArrayList<>();
+        this.inicializaTabuleiro();
+    }
+
+    public String[][] getTabuleiro() {
+        return tabuleiro;
+    }
+
+    public List<Jogada> getJogadas() {
+        return jogadas;
+    }
+
+    public void setJogadas(List<Jogada> jogadas) {
+        this.jogadas = jogadas;
     }
 
     public void adicionarJogadaNoTabuleiro(Jogada jogada){
@@ -17,6 +30,14 @@ public class Tabuleiro {
 
     private void adicionarJogadaNaListaDeJogadas(Jogada jogada){
         this.jogadas.add(jogada);
+    }
+
+    private void inicializaTabuleiro(){
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro.length; j++) {
+                tabuleiro[i][j] = "";
+            }
+        }
     }
 
     public void limparTabuleiro(){

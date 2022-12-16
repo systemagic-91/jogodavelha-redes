@@ -9,8 +9,7 @@ import java.net.InetAddress;
 import java.net.DatagramPacket;
 
 public class Servidor {
-
-    private static ServerSocket servidor;
+        
     private static Partida partida;
     private static Jogador jogador;
     private static String vencedor;
@@ -37,17 +36,13 @@ public class Servidor {
         return vencedor;
     }
 
-    public static String montarMensagem(String nickname, Integer x, Integer y, String tipoDeJogada){
-        return nickname + "," + x + "," + y;
+    public static String montarMensagem(String nickname, String tipoDeJogada, Integer x, Integer y, String vencedor){
+        return nickname + "," + tipoDeJogada + "," + x + "," + y + "," + vencedor;
     }
 
     public static String[] desmontarMensagem(String mensagem){
         var msg = mensagem.split(",");
         return msg;
-    }
-
-    public static void atualizaPontuacaoDoJogador(){
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -79,17 +74,24 @@ public class Servidor {
 
                                     //Operacao com os dados recebidos e preparacao dos a serem enviados
                                     var msgRecebida = desmontarMensagem(entrada.readLine());
-                                    System.out.println("Received: " + msgRecebida.toString());
+                                    System.out.println("Received: " + entrada.readLine());
+
+                                    for (int i = 0; i < msgRecebida.length; i++) {
+                                        System.out.println(msgRecebida[i]);
+                                    }
+
+                                    System.out.println("end data...");
 
                                     var nickname = msgRecebida[0];
-                                    var x = msgRecebida[1];
-                                    var y = msgRecebida[2];
-                                    var tipoDeJogada = msgRecebida[4];
+                                    var tipoDeJogada = msgRecebida[1];
+                                    var x = msgRecebida[2];
+                                    var y = msgRecebida[3];
+                                    String vencedor = msgRecebida[4];
 
-                                    Jogador j = new Jogador(nickname, tipoDeJogada);
-                                    Jogada jogada = new Jogada(j, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y));
+                                    jogador = new Jogador(nickname, tipoDeJogada);
+                                    Jogada jogada = new Jogada(jogador, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y));
 
-                                    String vencedor = atualizarJogo(jogada);
+                                    vencedor = atualizarJogo(jogada);
 
                                     if (vencedor.equals("O"))
                                         pontuacao_O++;
@@ -97,7 +99,7 @@ public class Servidor {
                                     if (vencedor.equals("X"))
                                         pontuacao_X++;
 
-                                    String msgParaEnviar = montarMensagem(nickname, Integer.parseInt(x), Integer.parseInt(y), tipoDeJogada);
+                                    String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y), vencedor);
 
                                     //Efetua a primitiva send
                                     DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());
@@ -134,14 +136,17 @@ public class Servidor {
                         new Thread(new Runnable() {
                             public void run() {
                                 byte[] sendData = new byte[1024];
+
                                 try {
                                     System.out.println("RECEIVED: " + new String(packet.getData()));
+
                                     InetAddress ipCliente = packet.getAddress();
                                     int portaCliente = packet.getPort();
                                     sendData = (new String(packet.getData())).toUpperCase().getBytes();
                            
                                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipCliente, portaCliente);
                                     udpSocket.send(sendPacket);
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
