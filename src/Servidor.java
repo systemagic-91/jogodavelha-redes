@@ -44,6 +44,17 @@ public class Servidor {
         }
     }
 
+    public static String montarMensagem(String nickname, Integer x, Integer y){
+        return nickname + "," + x + "," + y;
+    }
+
+    public static String [] desmontarMensagem(String mensagem){
+
+        var msg = mensagem.split(",");
+
+        return msg;
+    }
+
     public static void main(String[] args) {
 
         try {
