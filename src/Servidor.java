@@ -82,11 +82,11 @@ public class Servidor {
 
                                     System.out.println("end data...");
 
-                                    var nickname = msgRecebida[0];
-                                    var tipoDeJogada = msgRecebida[1];
-                                    var x = msgRecebida[2];
-                                    var y = msgRecebida[3];
-                                    String vencedor = msgRecebida[4];
+                                    var nickname = msgRecebida[0].trim();
+                                    var tipoDeJogada = msgRecebida[1].trim();
+                                    var x = msgRecebida[2].trim();
+                                    var y = msgRecebida[3].trim();
+                                    String vencedor = msgRecebida[4].trim();
 
                                     jogador = new Jogador(nickname, tipoDeJogada);
                                     Jogada jogada = new Jogada(jogador, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y));
