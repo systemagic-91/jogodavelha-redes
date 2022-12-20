@@ -15,6 +15,7 @@ public class Servidor {
     private static String vencedor;
     private static int pontuacao_X;
     private static int pontuacao_O;
+    private static boolean xInUse = false;
 
 
     public static void criaPartida(){
@@ -29,6 +30,10 @@ public class Servidor {
 
         jogador.setNickname(jogada.getJogador().getNickname());
 
+        if (jogada.getX() == -1 && jogada.getY() == -1) {
+            return "";
+        }
+
         partida.getTabuleiro().adicionarJogadaNoTabuleiro(jogada);
 
         vencedor = partida.getTabuleiro().verificaVencedor();
@@ -37,11 +42,11 @@ public class Servidor {
     }
 
     public static String montarMensagem(String nickname, String tipoDeJogada, Integer x, Integer y, String vencedor){
-        return nickname + "," + tipoDeJogada + "," + x + "," + y + "," + vencedor;
+        return nickname + "," + tipoDeJogada + "," + x + "," + y + "," + vencedor + "\n";
     }
 
     public static String[] desmontarMensagem(String mensagem){
-        var msg = mensagem.split(",");
+        String[] msg = mensagem.split(",");
         return msg;
     }
 
@@ -61,52 +66,64 @@ public class Servidor {
                     // Accept incoming TCP connections in an infinite loop
                     while (true) {
                         // Accept a new connection (blocking call)
+                        boolean xInUse = false;
+                        Jogada ultimaJogada = null;
                         Socket clientSocket = tcpSocket.accept();
 
                         // Handle the connection in a separate thread
                         new Thread(new Runnable() {
                             public void run() {
-                                try {
-                                    //Efetua a primitiva receive
-                                    System.out.println("Aguardando datagrama do cliente...");
-                                    BufferedReader entrada =  new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                                    System.out.println("Datagrama recebido...");
+                                while(true) {
+                                    try {
+                                        //Efetua a primitiva receive
+                                        System.out.println("Aguardando datagrama do cliente...");
+                                        BufferedReader entrada = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                                        System.out.println("Datagrama recebido...");
 
-                                    //Operacao com os dados recebidos e preparacao dos a serem enviados
-                                    var msgRecebida = desmontarMensagem(entrada.readLine());
-                                    System.out.println("Received: " + entrada.readLine());
+                                        //Operacao com os dados recebidos e preparacao dos a serem enviados
+                                        String[] msgRecebida = desmontarMensagem(entrada.readLine());
 
-                                    for (int i = 0; i < msgRecebida.length; i++) {
-                                        System.out.println(msgRecebida[i]);
+                                        String nickname = msgRecebida[0].trim();
+                                        String tipoDeJogada = msgRecebida[1].trim();
+                                        int x = Integer.valueOf(msgRecebida[2].trim());
+                                        int y = Integer.valueOf(msgRecebida[3].trim());
+                                        String vencedor = msgRecebida.length == 5 ? msgRecebida[4].trim() : "";
+
+                                        if (tipoDeJogada.equals("")) {
+                                            if (Servidor.xInUse) {
+                                                tipoDeJogada = "O";
+                                                Servidor.xInUse = false;
+                                            } else {
+                                                tipoDeJogada = "X";
+                                                Servidor.xInUse = true;
+                                            }
+                                        }
+
+                                        jogador = new Jogador(nickname, tipoDeJogada);
+                                        Jogada jogada = new Jogada(jogador, tipoDeJogada, x, y);
+
+                                        vencedor = atualizarJogo(jogada);
+
+                                        if (vencedor.equals("O"))
+                                            pontuacao_O++;
+
+                                        if (vencedor.equals("X"))
+                                            pontuacao_X++;
+
+                                        if (ultimaJogada == null) {
+                                            ultimaJogada = jogada;
+                                        }
+
+                                        String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, ultimaJogada.getX(), ultimaJogada.getY(), vencedor);
+
+                                        //Efetua a primitiva send
+                                        DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());
+                                        System.out.println(msgParaEnviar);
+                                        saida.writeBytes(msgParaEnviar);
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-
-                                    System.out.println("end data...");
-
-                                    var nickname = msgRecebida[0].trim();
-                                    var tipoDeJogada = msgRecebida[1].trim();
-                                    var x = msgRecebida[2].trim();
-                                    var y = msgRecebida[3].trim();
-                                    String vencedor = msgRecebida[4].trim();
-
-                                    jogador = new Jogador(nickname, tipoDeJogada);
-                                    Jogada jogada = new Jogada(jogador, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y));
-
-                                    vencedor = atualizarJogo(jogada);
-
-                                    if (vencedor.equals("O"))
-                                        pontuacao_O++;
-
-                                    if (vencedor.equals("X"))
-                                        pontuacao_X++;
-
-                                    String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, Integer.parseInt(x), Integer.parseInt(y), vencedor);
-
-                                    //Efetua a primitiva send
-                                    DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());
-                                    saida.writeBytes(msgParaEnviar);
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
                             }
                         }).start();

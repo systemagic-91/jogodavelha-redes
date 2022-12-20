@@ -6,13 +6,8 @@ class TCPConnection {
     //   private static String ipServidor = "2804:14c:5b71:589e:d923:3ee8:ada8:
    //private static String ipServidor = "::1";
    //private static String ipServidor = "127.0.0.1";
-   private static final String ipServidor = "192.168.15.5";
+   private static final String ipServidor = "192.168.15.4";
    private static Socket conexao;
-
-   public static String lerString () throws Exception {
-      BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-      return in.readLine();
-   }
    
    public static void closeConnection() {
       System.out.println("Fechando conexão com Servidor (IP " + conexao.getInetAddress().getHostAddress() + " e porta " + conexao.getPort() + ")");
@@ -20,13 +15,15 @@ class TCPConnection {
    }
    
    public static String receiveData() throws Exception {
+      System.out.println("Aguardando dado");
       BufferedReader entrada = new BufferedReader(new InputStreamReader(conexao.getInputStream()));
+      System.out.println("Dado recebido");
       return entrada.readLine();
    }
    
    public static void sendData(String data) throws Exception{
       DataOutputStream saida = new DataOutputStream(conexao.getOutputStream());
-      saida.writeBytes(lerString() + '\n');
+      saida.writeBytes(data + '\n');
    }
 
    public static void createConnection() throws Exception {

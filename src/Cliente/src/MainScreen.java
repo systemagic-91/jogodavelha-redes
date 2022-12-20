@@ -94,10 +94,10 @@ public class MainScreen extends javax.swing.JFrame {
         try {
             if(!jTextField1.getText().equals("Nome") && !jTextField1.getText().equals("")) {
                 JogoDaVelha.tcpConnection.createConnection();
+                JogoDaVelha.playScreen.nickname = jTextField1.getText();
                 JogoDaVelha.playScreen.returnToServer(-1, -1);
-                JogoDaVelha.playScreen.waitServerMessage();
                 this.setVisible(false);
-                JogoDaVelha.playScreen.setVisible(true);
+               JogoDaVelha.playScreen.setVisible(true);
             }
         } catch (Exception e) {
             e.printStackTrace();
