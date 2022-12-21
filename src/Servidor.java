@@ -180,9 +180,13 @@ public class Servidor {
 
                                     InetAddress ipCliente = packet.getAddress();
                                     int portaCliente = packet.getPort();
-                                    sendData = (new String(packet.getData())).toUpperCase().getBytes();
+
+                                    String data = Servidor.jogador.getNickname()+":" + pontuacao_X + ", NPC:" + pontuacao_O;
+                                    
+                                    sendData = (new String(data)).getBytes();
                            
                                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipCliente, portaCliente);
+
                                     udpSocket.send(sendPacket);
 
                                 } catch (Exception e) {
