@@ -72,6 +72,7 @@ public class Servidor {
 
                         // Handle the connection in a separate thread
                         new Thread(new Runnable() {
+                            Jogada ultimaJogada = null;
                             public void run() {
                                 while(true) {
                                     try {
