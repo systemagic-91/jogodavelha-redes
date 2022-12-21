@@ -130,10 +130,8 @@ public class Servidor {
                                             continue;
                                         }
 
-                                        
 
                                         int i = partida.getTabuleiro().getJogadas().size();
-                                        System.out.println("i ->>>>>>> "+i);
                                         String msgParaEnviar = montarMensagem(
                                                 partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getNickname(),
                                                 partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getOpcaoDeJogo(),
@@ -166,13 +164,13 @@ public class Servidor {
                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
                     // Receiving packets in an infinite loop
-                    while (true) {
+                    //while (true) {
                         // Receive a packet (blocking call)
                         udpSocket.receive(packet);
 
                         // Handle the packet in a separate thread
-                        new Thread(new Runnable() {
-                            public void run() {
+                        //new Thread(new Runnable() {
+                           // public void run() {
                                 byte[] sendData = new byte[1024];
 
                                 try {
@@ -181,7 +179,7 @@ public class Servidor {
                                     InetAddress ipCliente = packet.getAddress();
                                     int portaCliente = packet.getPort();
 
-                                    String data = Servidor.jogador.getNickname()+":" + pontuacao_X + ", NPC:" + pontuacao_O;
+                                    String data = "Jogador X:" + pontuacao_X + ", Jogador O:" + pontuacao_O;
                                     
                                     sendData = (new String(data)).getBytes();
                            
@@ -192,9 +190,9 @@ public class Servidor {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            }
-                        }).start();
-                    }
+                        //    }
+                        //}).start();
+                    //}
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

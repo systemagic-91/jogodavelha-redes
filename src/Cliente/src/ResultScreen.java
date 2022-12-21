@@ -150,7 +150,10 @@ public class ResultScreen extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
+            System.out.println("---------------");
+
             JogoDaVelha.scoreScreen.jTextPane1.setText(JogoDaVelha.udpConnection.getConnection());
+
             this.setVisible(false);
             JogoDaVelha.scoreScreen.setVisible(true);
         } catch (Exception ex) {

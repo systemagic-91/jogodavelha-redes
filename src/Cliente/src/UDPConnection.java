@@ -13,15 +13,19 @@ class UDPConnection
 
    public static String getConnection() throws Exception
    {
+      System.out.println("get");
       DatagramSocket clientSocket = new DatagramSocket();
-      InetAddress ipServidor = InetAddress.getByName("::1");
-      sendData = "board";
+      InetAddress ipServidor = InetAddress.getByName("127.0.0.1");
+      System.out.println("IP:"+ipServidor.toString());
+      sendData = "board".getBytes();
 
       DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipServidor, portaServidor);
       clientSocket.send(sendPacket);
+      System.out.println("send ok");
 
       DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
       clientSocket.receive(receivePacket);
+      System.out.println("recive ok");
       clientSocket.close();
 
       return new String(receivePacket.getData());
