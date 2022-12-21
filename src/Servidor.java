@@ -183,9 +183,13 @@ public class Servidor {
 
                                     InetAddress ipCliente = packet.getAddress();
                                     int portaCliente = packet.getPort();
-                                    sendData = (new String(packet.getData())).toUpperCase().getBytes();
+
+                                    String data = "" + pontuacao_O + "," + pontuacao_X;
+                                    //"NPC:"
+                                    sendData = (new String(data)).getBytes();
                            
                                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipCliente, portaCliente);
+
                                     udpSocket.send(sendPacket);
 
                                 } catch (Exception e) {
