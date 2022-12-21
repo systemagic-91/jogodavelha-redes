@@ -1,15 +1,17 @@
+package Cliente.src;
+
 import java.io.*;
 import java.net.*;
 
 class TCPConnection {
    private static final int portaServidor = 9999;
-    //   private static String ipServidor = "2804:14c:5b71:589e:d923:3ee8:ada8:
-   //private static String ipServidor = "::1";
-   //private static String ipServidor = "127.0.0.1";
+   // private static String ipServidor = "2804:14c:5b71:589e:d923:3ee8:ada8:
+   // private static String ipServidor = "::1";
+   // private static String ipServidor = "127.0.0.1";
    private static final String ipServidor = "192.168.15.4";
    private static Socket conexao;
    
-   public static void closeConnection() {
+   public static void closeConnection() throws IOException {
       System.out.println("Fechando conexão com Servidor (IP " + conexao.getInetAddress().getHostAddress() + " e porta " + conexao.getPort() + ")");
       conexao.close();
    }

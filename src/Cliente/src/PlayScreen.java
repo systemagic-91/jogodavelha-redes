@@ -1,3 +1,6 @@
+package Cliente.src;
+
+import Cliente.src.JogoDaVelha;
 
 import java.awt.Color;
 
