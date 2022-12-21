@@ -140,6 +140,7 @@ public class Servidor {
                                         
                                     } catch (Exception e) {
                                         e.printStackTrace();
+                                        break;
                                     }
                                 }
                             }

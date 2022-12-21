@@ -78,7 +78,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton3.getBackground() != Color.blue && jButton3.getBackground() != Color.red) {
-                        returnToServer(2, 0);
+                        returnToServer(0, 2);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -300,6 +300,7 @@ public class PlayScreen extends javax.swing.JFrame {
                 }
             }
         }
+        System.out.println(data);
     }
     
     public void returnToServer(int x, int y) throws Exception {
