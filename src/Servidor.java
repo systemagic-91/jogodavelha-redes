@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.DatagramPacket;
@@ -15,12 +15,15 @@ public class Servidor {
         
     private static Partida partida;
     private static Jogador jogador;
+    private static Socket jogador1;
+    private static Socket jogador2;
     private static String vencedor;
     private static int pontuacao_X;
     private static int pontuacao_O;
     private static int contaJogadas;
     private static List<Socket> clientesConectados;
     private static boolean xInUse = false;
+    private static boolean setJogadores = false;
 
 
     public static void criaPartida(){
@@ -28,6 +31,8 @@ public class Servidor {
         pontuacao_X = 0;
         pontuacao_O = 0;
         contaJogadas = 0;
+        jogador1 = null;
+        jogador2 = null;
         clientesConectados = new ArrayList<>();
     }
 
@@ -123,24 +128,15 @@ public class Servidor {
                                         if (vencedor.equals("X"))
                                             pontuacao_X++;
 
-                                        // pegar a ultima jogada da lista de jogadas
                                         String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, jogada.getX(), jogada.getY(), vencedor);
 
-                                        contaJogadas++;
+                                        DataOutputStream saida = new DataOutputStream(clientesConectados.get(0).getOutputStream());
+                                        System.out.println(msgParaEnviar);
+                                        saida.writeBytes(msgParaEnviar);
 
-//                                        for (int i = 0; i < partida.getTabuleiro().getJogadas().size(); i++) {
-//                                            System.out.println(partida.getTabuleiro().getJogadas().get(i).toString());
-//                                        }
-
-                                        // setar ip e porta do cliente da ultima jogada
-
-                                        for (Socket clients : clientesConectados) {                                            
-                                            DataOutputStream saida = new DataOutputStream(clients.getOutputStream());
-                                            System.out.println(msgParaEnviar);
-                                            saida.writeBytes(msgParaEnviar);
-                                        }
-
-                                        //Efetua a primitiva send
+                                        saida = new DataOutputStream(clientesConectados.get(1).getOutputStream());
+                                        System.out.println(msgParaEnviar);
+                                        saida.writeBytes(msgParaEnviar);
                                         
                                     } catch (Exception e) {
                                         e.printStackTrace();
