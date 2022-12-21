@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -15,15 +13,13 @@ public class Servidor {
         
     private static Partida partida;
     private static Jogador jogador;
-    private static Socket jogador1;
-    private static Socket jogador2;
+    private static Jogador npc;
     private static String vencedor;
     private static int pontuacao_X;
     private static int pontuacao_O;
     private static int contaJogadas;
     private static boolean xInUse = false;
     private static boolean setJogadores = false;
-    public static String clientFree = "O";
 
 
     public static void criaPartida(){
@@ -31,8 +27,6 @@ public class Servidor {
         pontuacao_X = 0;
         pontuacao_O = 0;
         contaJogadas = 0;
-        jogador1 = null;
-        jogador2 = null;
     }
 
     public static String atualizarJogo(Jogada jogada){
@@ -85,6 +79,9 @@ public class Servidor {
                         new Thread(new Runnable() {
 
                             public void run() {
+
+                                npc = new Jogador("npc", "O");
+
                                 while(true) {
                                     try {
                                         //Efetua a primitiva receive
@@ -96,20 +93,10 @@ public class Servidor {
                                         String[] msgRecebida = desmontarMensagem(entrada.readLine());
 
                                         String nickname = msgRecebida[0].trim();
-                                        String tipoDeJogada = msgRecebida[1].trim();
+                                        String tipoDeJogada = "X";
                                         int x = Integer.valueOf(msgRecebida[2].trim());
                                         int y = Integer.valueOf(msgRecebida[3].trim());
                                         String vencedor = msgRecebida.length == 5 ? msgRecebida[4].trim() : "";
-
-                                        if (tipoDeJogada.equals("")) {
-                                            if (Servidor.xInUse) {
-                                                tipoDeJogada = "O";
-                                                Servidor.xInUse = false;
-                                            } else {
-                                                tipoDeJogada = "X";
-                                                Servidor.xInUse = true;
-                                            }
-                                        }
 
                                         jogador = new Jogador(nickname, tipoDeJogada);
                                         jogador.setIP(clientSocket.getInetAddress().toString());
@@ -119,6 +106,16 @@ public class Servidor {
 
                                         vencedor = atualizarJogo(jogada);
 
+                                        if (vencedor.equals("")) {
+
+                                            int[] coordenatesNPC = partida.getTabuleiro().getRandomEmptyPosition();
+
+                                            Jogada jogadaNPC = new Jogada(npc, "O", coordenatesNPC[0], coordenatesNPC[1]);
+
+                                            vencedor = atualizarJogo(jogadaNPC);
+
+                                        }
+
                                         if (vencedor.equals("O"))
                                             pontuacao_O++;
 
@@ -127,23 +124,23 @@ public class Servidor {
 
                                         DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());               
 
-                                        boolean isAvailable = false;
-                                        while (!isAvailable) {
-                                            if (Servidor.clientFree.equals(tipoDeJogada)) {
-                                                int i = partida.getTabuleiro().getJogadas().size();
-                                                System.out.println("i ->>>>>>> "+i);
-                                                String msgParaEnviar = montarMensagem(
-                                                        partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getNickname(),
-                                                        partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getOpcaoDeJogo(),
-                                                        partida.getTabuleiro().getJogadas().get(i - 1).getX(),
-                                                        partida.getTabuleiro().getJogadas().get(i - 1).getY(),
-                                                        vencedor);
-                                                saida.writeBytes(msgParaEnviar);
-                                                Servidor.clientFree = Servidor.clientFree.equals("X") ? "O" : "X";
-                                                isAvailable = true;
-                                            }
+                                        if(msgRecebida[1].trim().equals("")){
+                                            String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, -1,-1,"");
+                                            saida.writeBytes(msgParaEnviar);
+                                            continue;
                                         }
+
                                         
+
+                                        int i = partida.getTabuleiro().getJogadas().size();
+                                        System.out.println("i ->>>>>>> "+i);
+                                        String msgParaEnviar = montarMensagem(
+                                                partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getNickname(),
+                                                partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getOpcaoDeJogo(),
+                                                partida.getTabuleiro().getJogadas().get(i - 1).getX(),
+                                                partida.getTabuleiro().getJogadas().get(i - 1).getY(),
+                                                vencedor);
+                                        saida.writeBytes(msgParaEnviar);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         break;
