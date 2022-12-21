@@ -16,6 +16,7 @@ import java.awt.Color;
 public class PlayScreen extends javax.swing.JFrame {
     public String nickname;
     public char type;
+    public boolean canContinue = false;
 
     /**
      * Creates new form PlayScreen
@@ -54,6 +55,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton1.getBackground() != Color.blue && jButton1.getBackground() != Color.red) {
+                        jButton1.setBackground(Color.red);
                         returnToServer(0, 0);
                     }
                 } catch (Exception e) {
@@ -66,6 +68,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton2.getBackground() != Color.blue && jButton2.getBackground() != Color.red) {
+                        jButton2.setBackground(Color.red);
                         returnToServer(0, 1);
                     }
                 } catch (Exception e) {
@@ -78,6 +81,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton3.getBackground() != Color.blue && jButton3.getBackground() != Color.red) {
+                        jButton3.setBackground(Color.red);
                         returnToServer(0, 2);
                     }
                 } catch (Exception e) {
@@ -90,6 +94,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton5.getBackground() != Color.blue && jButton5.getBackground() != Color.red) {
+                        jButton5.setBackground(Color.red);
                         returnToServer(1, 1);
                     }
                 } catch (Exception e) {
@@ -102,6 +107,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton6.getBackground() != Color.blue && jButton6.getBackground() != Color.red) {
+                        jButton6.setBackground(Color.red);
                         returnToServer(1, 2);
                     }
                 } catch (Exception e) {
@@ -114,6 +120,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton7.getBackground() != Color.blue && jButton7.getBackground() != Color.red) {
+                        jButton7.setBackground(Color.red);
                         returnToServer(2, 0);
                     }
                 } catch (Exception e) {
@@ -126,6 +133,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton8.getBackground() != Color.blue && jButton8.getBackground() != Color.red) {
+                        jButton8.setBackground(Color.red);
                         returnToServer(2, 1);
                     }
                 } catch (Exception e) {
@@ -138,6 +146,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton9.getBackground() != Color.blue && jButton9.getBackground() != Color.red) {
+                        jButton9.setBackground(Color.red);
                         returnToServer(2, 2);
                     }
                 } catch (Exception e) {
@@ -150,6 +159,7 @@ public class PlayScreen extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
                     if (jButton4.getBackground() != Color.blue && jButton4.getBackground() != Color.red) {
+                        jButton4.setBackground(Color.red);
                         returnToServer(1, 0);
                     }
                 } catch (Exception e) {
@@ -222,7 +232,7 @@ public class PlayScreen extends javax.swing.JFrame {
         String[] datas = data.split(",");
         if (datas.length == 5 && !datas[4].equals("")) {
             this.setVisible(false);
-            if (type == datas[4].charAt(0)) {
+            if ('X' == datas[4].charAt(0)) {
                 JogoDaVelha.resultScreen.setLabelWin(true);
             } else {
                 JogoDaVelha.resultScreen.setLabelLost(true);
@@ -232,6 +242,10 @@ public class PlayScreen extends javax.swing.JFrame {
         }
         nickname = datas[0];
         type = datas[1].charAt(0);
+
+        if (Integer.valueOf(datas[2]) != -1 && Integer.valueOf(datas[3]) != -1) {
+            canContinue = true;
+        }
         
         if (Integer.valueOf(datas[2]) == 0) {
             if (Integer.valueOf(datas[3]) == 0) {

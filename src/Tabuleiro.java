@@ -48,6 +48,19 @@ public class Tabuleiro {
         }
     }
 
+    public int[] getRandomEmptyPosition() {
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro.length; j++) {
+                if (tabuleiro[i][j].equals("")) {
+                    int[] retorno = {i, j};
+                    return retorno;
+                }
+            }
+        }
+        int[] retorno = {-1, -1};
+        return retorno; 
+    }
+
     public String verificaVencedor(){
 
         // LINHAS
