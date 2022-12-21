@@ -3,6 +3,8 @@ public class Jogador {
     private String nickname;
     private Integer pontuacao;
     private String opcaoDeJogo;
+    private String IP;
+    private int porta;
 
     public Jogador() {
         this("","");
@@ -41,6 +43,22 @@ public class Jogador {
 
     public void setOpcaoDeJogo(String opcaoDeJogo) {
         this.opcaoDeJogo = opcaoDeJogo;
+    }
+
+    public String getIP() {
+        return IP;
+    }
+
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
+
+    public int getPorta() {
+        return porta;
+    }
+
+    public void setPorta(int porta) {
+        this.porta = porta;
     }
 
     @Override
