@@ -306,8 +306,9 @@ public class PlayScreen extends javax.swing.JFrame {
     public void returnToServer(int x, int y) throws Exception {
         String sendToServer = nickname+","+type+","+Integer.toString(x)+","+Integer.toString(y)+",";
         JogoDaVelha.tcpConnection.sendData(sendToServer);
+        this.setEnabled(false);
         waitServerMessage();
-        jButton1.setEnabled(true);
+        this.setEnabled(true);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

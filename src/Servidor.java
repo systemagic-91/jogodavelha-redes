@@ -21,9 +21,9 @@ public class Servidor {
     private static int pontuacao_X;
     private static int pontuacao_O;
     private static int contaJogadas;
-    private static List<Socket> clientesConectados;
     private static boolean xInUse = false;
     private static boolean setJogadores = false;
+    public static String clientFree = "O";
 
 
     public static void criaPartida(){
@@ -33,7 +33,6 @@ public class Servidor {
         contaJogadas = 0;
         jogador1 = null;
         jogador2 = null;
-        clientesConectados = new ArrayList<>();
     }
 
     public static String atualizarJogo(Jogada jogada){
@@ -82,8 +81,6 @@ public class Servidor {
                         // Jogada ultimaJogada = null;
                         Socket clientSocket = tcpSocket.accept();
 
-                        clientesConectados.add(clientSocket);
-
                         // Handle the connection in a separate thread
                         new Thread(new Runnable() {
 
@@ -128,26 +125,23 @@ public class Servidor {
                                         if (vencedor.equals("X"))
                                             pontuacao_X++;
 
-                                        String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, jogada.getX(), jogada.getY(), vencedor);
+                                        DataOutputStream saida = new DataOutputStream(clientSocket.getOutputStream());               
 
-                                        DataOutputStream saida = new DataOutputStream(clientesConectados.get(0).getOutputStream());
-                                        System.out.println("Enviada para cliente 0: " + msgParaEnviar);
-                                        saida.writeBytes(msgParaEnviar);
-
-                                        if(clientesConectados.size() > 1){
-                                            int i = partida.getTabuleiro().getJogadas().size();
-                                            System.out.println("i ->>>>>>> "+i);
-                                            if(i>0) {
-                                                msgParaEnviar = montarMensagem(
+                                        boolean isAvailable = false;
+                                        while (!isAvailable) {
+                                            if (Servidor.clientFree.equals(tipoDeJogada)) {
+                                                int i = partida.getTabuleiro().getJogadas().size();
+                                                System.out.println("i ->>>>>>> "+i);
+                                                String msgParaEnviar = montarMensagem(
                                                         partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getNickname(),
                                                         partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getOpcaoDeJogo(),
                                                         partida.getTabuleiro().getJogadas().get(i - 1).getX(),
                                                         partida.getTabuleiro().getJogadas().get(i - 1).getY(),
                                                         vencedor);
+                                                saida.writeBytes(msgParaEnviar);
+                                                Servidor.clientFree = Servidor.clientFree.equals("X") ? "O" : "X";
+                                                isAvailable = true;
                                             }
-                                            saida = new DataOutputStream(clientesConectados.get(1).getOutputStream());
-                                            System.out.println("Enviada para cliente 1: " + msgParaEnviar);
-                                            saida.writeBytes(msgParaEnviar);
                                         }
                                         
                                     } catch (Exception e) {
