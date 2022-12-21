@@ -131,12 +131,24 @@ public class Servidor {
                                         String msgParaEnviar = montarMensagem(nickname, tipoDeJogada, jogada.getX(), jogada.getY(), vencedor);
 
                                         DataOutputStream saida = new DataOutputStream(clientesConectados.get(0).getOutputStream());
-                                        System.out.println(msgParaEnviar);
+                                        System.out.println("Enviada para cliente 0: " + msgParaEnviar);
                                         saida.writeBytes(msgParaEnviar);
 
-                                        saida = new DataOutputStream(clientesConectados.get(1).getOutputStream());
-                                        System.out.println(msgParaEnviar);
-                                        saida.writeBytes(msgParaEnviar);
+                                        if(clientesConectados.size() > 1){
+                                            int i = partida.getTabuleiro().getJogadas().size();
+                                            System.out.println("i ->>>>>>> "+i);
+                                            if(i>0) {
+                                                msgParaEnviar = montarMensagem(
+                                                        partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getNickname(),
+                                                        partida.getTabuleiro().getJogadas().get(i - 1).getJogador().getOpcaoDeJogo(),
+                                                        partida.getTabuleiro().getJogadas().get(i - 1).getX(),
+                                                        partida.getTabuleiro().getJogadas().get(i - 1).getY(),
+                                                        vencedor);
+                                            }
+                                            saida = new DataOutputStream(clientesConectados.get(1).getOutputStream());
+                                            System.out.println("Enviada para cliente 1: " + msgParaEnviar);
+                                            saida.writeBytes(msgParaEnviar);
+                                        }
                                         
                                     } catch (Exception e) {
                                         e.printStackTrace();
