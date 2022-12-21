@@ -181,8 +181,8 @@ public class Servidor {
                                     InetAddress ipCliente = packet.getAddress();
                                     int portaCliente = packet.getPort();
 
-                                    String data = "" + pontuacao_O + "," + pontuacao_X;
-                                    //"NPC:"
+                                    String data = Servidor.jogador.getNickname()+":" + pontuacao_X + ", NPC:" + pontuacao_O;
+                                    
                                     sendData = (new String(data)).getBytes();
                            
                                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipCliente, portaCliente);
