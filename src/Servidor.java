@@ -24,9 +24,7 @@ public class Servidor {
 
     public static void criaPartida(){
         partida = new Partida();
-        pontuacao_X = 0;
-        pontuacao_O = 0;
-        contaJogadas = 0;
+        npc = new Jogador("npc", "O");
     }
 
     public static String atualizarJogo(Jogada jogada){
@@ -62,7 +60,9 @@ public class Servidor {
         // Create a DatagramSocket to listen for UDP connections
         DatagramSocket udpSocket = new DatagramSocket(9988);
 
-        criaPartida();
+        pontuacao_X = 0;
+        pontuacao_O = 0;
+        contaJogadas = 0;
 
         // Start a thread to handle TCP connections
         new Thread(new Runnable() {
@@ -80,7 +80,7 @@ public class Servidor {
 
                             public void run() {
 
-                                npc = new Jogador("npc", "O");
+                                criaPartida();
 
                                 while(true) {
                                     try {

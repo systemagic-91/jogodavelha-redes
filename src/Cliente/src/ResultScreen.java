@@ -137,7 +137,10 @@ public class ResultScreen extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             JogoDaVelha.tcpConnection.createConnection();
-            JogoDaVelha.playScreen.waitServerMessage();
+            String nickname = JogoDaVelha.playScreen.nickname;
+            JogoDaVelha.playScreen = new PlayScreen();
+            JogoDaVelha.playScreen.nickname = nickname;
+            JogoDaVelha.playScreen.returnToServer(-1, -1);
             this.setVisible(false);
             JogoDaVelha.playScreen.setVisible(true);
         } catch (Exception e) {
