@@ -1,4 +1,4 @@
-package Cliente.src;
+//package Cliente.src;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

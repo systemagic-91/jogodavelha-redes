@@ -1,4 +1,4 @@
-package Cliente.src;
+//package Cliente.src;
 
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
